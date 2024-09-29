@@ -1,0 +1,367 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2566">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000; min-height: 14.0px}
+    span.s1 {font-kerning: none}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">#The template looking of prompt starts line 340,<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">#lines before that are few-shot examples for filling.</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"># Task Description: Put an Egg in the Fridge, and place a pot containing Apple slices into the refrigerator.</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"># GENERAL TASK DECOMPOSITION<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"># Decompose and parallel subtasks where ever possible</span></p>
+<p class="p1"><span class="s1"># Independent subtasks:</span></p>
+<p class="p1"><span class="s1"># SubTask 1: Put an Egg in the Fridge. (Skills Required: GoToObject, PickupObject, OpenObject, PutObject, CloseObject)</span></p>
+<p class="p1"><span class="s1"># SubTask 2: Prepare Apple Slices. (Skills Required: GoToObject, PickupObject, SliceObject, PutObject)</span></p>
+<p class="p1"><span class="s1"># SubTask 3: Place the Pot with Apple Slices in the Fridge. (Skills Required: GoToObject, PickupObject, PutObject, OpenObject, CloseObject)</span></p>
+<p class="p1"><span class="s1"># We can parallelize SubTask 1 and SubTask 2 because they don't depend on each other.</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"># action description from domain for tasks required</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">#Subtask 1 Put an Egg in the Fridge</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"># Initial condition analyze due to previous subtask:</span></p>
+<p class="p1"><span class="s1">#1. Robot not at egg location</span></p>
+<p class="p1"><span class="s1">#2. Robot not holding egg</span></p>
+<p class="p1"><span class="s1">#3. fridge is fridge, and initally closed</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject: Robot goes to the egg.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot , ?egg ,</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at ?robot ?egg), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PickupObject: Robot picks up the egg.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot , ?egg , ?location<span class="Apple-converted-space">  </span>(where egg is initially located)</span></p>
+<p class="p1"><span class="s1">Preconditions: (at-location ?egg ?location), (at ?robot ?location), (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (holding ?robot ?egg), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject: Robot goes to the fridge.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot , ?fridge<span class="Apple-converted-space">  </span>,</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">effects: (at ?robot ?fridge), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">OpenObject: Robot opens the fridge.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot , ?fridge ,</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction ?robot)), (at ?robot ?fridge)</span></p>
+<p class="p1"><span class="s1">Effects: (object-open ?robot ?fridge), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PutObject: Robot puts the egg inside the fridge.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot<span class="Apple-converted-space">  </span>, ?egg <span class="Apple-converted-space">  </span>?fridge <span class="Apple-converted-space">  </span>,(location inside the fridge)</span></p>
+<p class="p1"><span class="s1">Preconditions: (holding ?robot ?egg), (at ?robot ?fridge), (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at-location ?egg ?fridge), (not (holding ?robot ?egg)), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">CloseObject: Robot closes the fridge.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot<span class="Apple-converted-space">  </span>?fridge<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction ?robot)), (at ?robot ?fridge)</span></p>
+<p class="p1"><span class="s1">Effects: (object-close ?robot ?fridge), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">#Subtask 2: Prepare Apple Slices</span></p>
+<p class="p1"><span class="s1"># Initial condition analyze due to previous subtask:</span></p>
+<p class="p1"><span class="s1">#1. Robot not at apple location</span></p>
+<p class="p1"><span class="s1">#2. Robot not holding apple</span></p>
+<p class="p1"><span class="s1">#3. Robot not holding knife</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject : Robot goes to the apple</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot , ?Apple ,</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction Robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at Robot Apple), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PickupObject (Robot, Apple, AppleLocation)</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot , ?Apple , ?AppleLocation<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">Preconditions: (at-location Apple AppleLocation), (at Robot AppleLocation), (not (inaction Robot))</span></p>
+<p class="p1"><span class="s1">Effects: (holding Robot Apple), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject (Robot, Knife)</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot , ?Knife<span class="Apple-converted-space">  </span>,</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction Robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at Robot CuttingBoard), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PickupObject (Robot, Knife, KnifeLocation)</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot , ?Knife , ?KnifeLocation<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">Preconditions: (at-location Knife KnifeLocation), (at Robot KnifeLocation), (not (inaction Robot))</span></p>
+<p class="p1"><span class="s1">Effects: (holding Robot Knife), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">SliceObject (Robot, Apple)</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot , ?Apple,</span></p>
+<p class="p1"><span class="s1">Preconditions: (holding robot knife), (holding Robot Apple), (not (inaction Robot))</span></p>
+<p class="p1"><span class="s1">Effects: (sliced Apple), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject (Robot, Pot)</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot , ?Pot<span class="Apple-converted-space">  </span>,</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction Robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at Robot Pot), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PutObject (Robot, AppleSlices, Pot)</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot , ?AppleSlices, ?Pot</span></p>
+<p class="p1"><span class="s1">Preconditions: (holding Robot AppleSlices), (at Robot Pot), (not (inaction Robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at-location AppleSlices Pot), (not (holding Robot AppleSlices)), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">#subtask 3: Place the Pot with Apple Slices in the Fridge</span></p>
+<p class="p1"><span class="s1"># Inital condition analyze due to previous subtask:</span></p>
+<p class="p1"><span class="s1">#1. Robot at pot location</span></p>
+<p class="p1"><span class="s1">#2. Fridge is Fridge, and initally closed</span></p>
+<p class="p1"><span class="s1">#3. Robot not holding pot initally.</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PickupObject (Robot, Pot, PotLocation)</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot - robot, ?Apple - object ,</span></p>
+<p class="p1"><span class="s1">Preconditions: (at-location Pot PotLocation), (at Robot PotLocation), (not (inaction Robot))</span></p>
+<p class="p1"><span class="s1">Effects: (holding Robot Pot), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject (Robot, Fridge)</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot - robot, ?Apple - object ,</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction Robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at Robot Fridge), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">OpenObject (Robot, Fridge)</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot - robot, ?Apple - object ,</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction Robot)), (at Robot Fridge)</span></p>
+<p class="p1"><span class="s1">Effects: (object-open Robot Fridge), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PutObject (Robot, Pot, Fridge)</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot - robot, ?Apple - object ,</span></p>
+<p class="p1"><span class="s1">Preconditions: (holding Robot Pot), (at Robot Fridge), (not (inaction Robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at-location Pot Fridge), (not (holding Robot Pot)), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">CloseObject (Robot, Fridge)</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot - robot, ?Apple - object ,</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction Robot)), (at Robot Fridge)</span></p>
+<p class="p1"><span class="s1">Effects: (object-close Robot Fridge), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"># Task Put an Egg in the Fridge, and place a pot containing Apple slices into the refrigerator is done.</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"># Task Description: Make a sandwich with sliced lettuce, sliced tomato, sliced bread and serve it on a washed plate.</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"># GENERAL TASK DECOMPOSITION</span></p>
+<p class="p1"><span class="s1"># Decompose and parallelize subtasks where ever possible</span></p>
+<p class="p1"><span class="s1"># Independent subtasks:</span></p>
+<p class="p1"><span class="s1"># SubTask 1: Slice the Lettuce, Tomato, and Bread. (Skills Required: GoToObject, PickupObject, SliceObject, PutObject)</span></p>
+<p class="p1"><span class="s1"># SubTask 2: Wash the Plate. (Skills Required: GoToObject, PickupObject, PutObject, SwitchOn, SwitchOff)</span></p>
+<p class="p1"><span class="s1"># SubTask 3: Assemble the Sandwich. (Skills Required: GoToObject, PickupObject, PutObject)</span></p>
+<p class="p1"><span class="s1"># We can parallelize SubTask 1 and SubTask 2 because they don't depend on each other.</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"># action description from domain for tasks required</span></p>
+<p class="p1"><span class="s1">#Subtask 1: Prepare Lettuce Slices</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"># Initial Precondition analyze due to previous subtask:</span></p>
+<p class="p1"><span class="s1"># 1. Robot not holding lettuce.</span></p>
+<p class="p1"><span class="s1"># 2. Robot not at lettuce location.</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject (Robot, Knife)</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot , ?Knife<span class="Apple-converted-space">  </span>,</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction Robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at Robot CuttingBoard), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PickupObject (Robot, Knife, KnifeLocation)</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot , ?Knife , ?KnifeLocation<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">Preconditions: (at-location Knife KnifeLocation), (at Robot KnifeLocation), (not (inaction Robot))</span></p>
+<p class="p1"><span class="s1">Effects: (holding Robot Knife), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject: Robot goes to the lettuce.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?lettuce</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at ?robot ?lettuce), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">SliceObject: Robot slices the lettuce.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?lettuce</span></p>
+<p class="p1"><span class="s1">Preconditions: (holding robot knife), (holding ?robot ?lettuce), (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (sliced ?lettuce), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">#Subtask 2: Prepare Tomato Slices</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"># Initial Precondition analyze due to previous subtask:</span></p>
+<p class="p1"><span class="s1">#1. Robot not holding tomate</span></p>
+<p class="p1"><span class="s1">#2. Robot not at tomate location</span></p>
+<p class="p1"><span class="s1">#3. Robot not holding knife</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject (Robot, Knife)</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot , ?Knife<span class="Apple-converted-space">  </span>,</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction Robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at Robot CuttingBoard), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PickupObject (Robot, Knife, KnifeLocation)</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot , ?Knife , ?KnifeLocation<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">Preconditions: (at-location Knife KnifeLocation), (at Robot KnifeLocation), (not (inaction Robot))</span></p>
+<p class="p1"><span class="s1">Effects: (holding Robot Knife), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject: Robot goes to the tomato.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?tomato</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at ?robot ?tomato), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">SliceObject: Robot slices the tomato.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?tomato</span></p>
+<p class="p1"><span class="s1">Preconditions: (holding robot knife), (holding ?robot ?tomato), (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (sliced ?tomato), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">#Subtask 3: Prepare Bread Slices</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">#1. Robot not holding bread</span></p>
+<p class="p1"><span class="s1">#2. Robot not at<span class="Apple-converted-space">  </span>bread location.</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject (Robot, Knife)</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot , ?Knife<span class="Apple-converted-space">  </span>,</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction Robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at Robot CuttingBoard), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PickupObject (Robot, Knife, KnifeLocation)</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot , ?Knife , ?KnifeLocation<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1">Preconditions: (at-location Knife KnifeLocation), (at Robot KnifeLocation), (not (inaction Robot))</span></p>
+<p class="p1"><span class="s1">Effects: (holding Robot Knife), (not (inaction Robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject: Robot goes to the bread.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?bread</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at ?robot ?bread), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">SliceObject: Robot slices the bread.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?bread</span></p>
+<p class="p1"><span class="s1">Preconditions: (holding robot knife), (holding ?robot ?bread), (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (sliced ?bread), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">#Subtask 4: Wash Plate</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">#1. Robot not holding plate</span></p>
+<p class="p1"><span class="s1">#2. Robot not at plate location</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject: Robot goes to the plate.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?plate</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at ?robot ?plate), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PickupObject: Robot picks up the plate.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?plate, ?location (where plate is initially located)</span></p>
+<p class="p1"><span class="s1">Preconditions: (at-location ?plate ?location), (at ?robot ?location), (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (holding ?robot ?plate), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject: Robot goes to the sink.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?sink</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at ?robot ?sink), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">CleanObject: Robot cleans the plate.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?plate</span></p>
+<p class="p1"><span class="s1">Preconditions: (at ?robot ?sink), (holding ?robot ?plate), (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (cleaned ?robot ?plate), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">#Subtask 5: Assemble Sandwich on Plate</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">#1. Robot not holding bread, lettuce, or tomato</span></p>
+<p class="p1"><span class="s1">#2. Robot holding plate</span></p>
+<p class="p1"><span class="s1">#3. Robot not at bread, lettuce, or tomato location</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject: Robot goes to the sliced bread.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?bread</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at ?robot ?bread), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PickupObject: Robot picks up the sliced bread.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?bread, ?cuttingBoard</span></p>
+<p class="p1"><span class="s1">Preconditions: (at-location ?bread ?cuttingBoard), (at ?robot ?cuttingBoard), (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (holding ?robot ?bread), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject: Robot goes to the plate.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?plate</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at ?robot ?plate), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PutObject: Robot places the sliced bread on the plate.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?bread, ?plate</span></p>
+<p class="p1"><span class="s1">Preconditions: (holding ?robot ?bread), (at ?robot ?plate), (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at-location ?bread ?plate), (not (holding ?robot ?bread)), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject: Robot goes to the lettuce.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?lettuce</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at ?robot ?lettuce), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PickupObject: Robot picks up the sliced lettuce.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?lettuce, ?cuttingBoard</span></p>
+<p class="p1"><span class="s1">Preconditions: (at-location ?lettuce ?cuttingBoard), (at ?robot ?cuttingBoard), (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (holding ?robot ?lettuce), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject: Robot goes to the plate.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?plate</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at ?robot ?plate), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PutObject: Robot places the sliced lettuce on the bread.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?lettuce, ?plate</span></p>
+<p class="p1"><span class="s1">Preconditions: (holding ?robot ?lettuce), (at ?robot ?plate), (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at-location ?lettuce ?plate), (not (holding ?robot ?lettuce)), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject: Robot goes to the sliced tomato.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?tomato</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at ?robot ?tomato), (not (inacti</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PickupObject: Robot picks up the sliced tomato.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?tomato, ?cuttingBoard</span></p>
+<p class="p1"><span class="s1">Preconditions: (at-location ?tomato ?cuttingBoard), (at ?robot ?cuttingBoard), (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (holding ?robot ?tomato), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject: Robot goes to the plate.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?plate</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at ?robot ?plate), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PutObject: Robot places the sliced tomato on the lettuce.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?tomato, ?plate</span></p>
+<p class="p1"><span class="s1">Preconditions: (holding ?robot ?tomato), (at ?robot ?plate), (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at-location ?tomato ?plate), (not (holding ?robot ?tomato)), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject: Robot goes to another sliced bread.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?bread</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at ?robot ?bread), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PickupObject: Robot picks up another sliced bread.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?bread, ?cuttingBoard</span></p>
+<p class="p1"><span class="s1">Preconditions: (at-location ?bread ?cuttingBoard), (at ?robot ?cuttingBoard), (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (holding ?robot ?bread), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">GoToObject: Robot goes to the plate.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?plate</span></p>
+<p class="p1"><span class="s1">Preconditions: (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at ?robot ?plate), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">PutObject: Robot places the sliced bread on the sandwich.</span></p>
+<p class="p1"><span class="s1">Parameters: ?robot, ?bread, ?plate</span></p>
+<p class="p1"><span class="s1">Preconditions: (holding ?robot ?bread), (at ?robot ?plate), (not (inaction ?robot))</span></p>
+<p class="p1"><span class="s1">Effects: (at-location ?bread ?plate), (not (holding ?robot ?bread)), (not (inaction ?robot))</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"># Task Make a sandwich with sliced lettuce, sliced tomato, sliced bread and serve it on a washed plate is done.</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1">#The actual Prompt Template:</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"># prepare train decompostion demonstration for ai2thor samples</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>allaction_pddldomain = open(os.getcwd() + "/resources/allactionrobot.pddl","r")</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>prompt = f"from pddl domain file with all possible actions: " +"\n" + allaction_pddldomain.read()</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>objects_ai = f"\n\nobjects = {get_ai2_thor_objects(args.floor_plan)}"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>prompt += objects_ai</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>prompt +=<span class="Apple-converted-space">  </span>decompose_prompt #the above examples</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>prompt += "robot initaite 'as not inaction robot' (which defaults location too)\n\n" + decompose_prompt</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>prompt += "# GENERAL TASK DECOMPOSITION \n Decompose and parallel subtasks where ever possible."</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+</body>
+</html>
